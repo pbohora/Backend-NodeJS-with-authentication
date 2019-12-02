@@ -7,6 +7,7 @@ const connectDb = (url = config.dbUrl, opts = {}) => {
 		useNewUrlParser: true,
 		useCreateIndex: true,
 		useUnifiedTopology: true,
+		useFindAndModify: false,
 	})
 }
 
