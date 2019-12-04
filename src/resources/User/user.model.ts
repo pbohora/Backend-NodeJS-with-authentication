@@ -1,4 +1,10 @@
-import mongoose from 'mongoose'
+import mongoose, {Document} from 'mongoose'
+import {User} from './user.interface'
+import bcrypt from 'bcryptjs'
+
+export interface UserDocument extends Document, User {
+	checkPassword: (password: string) => boolean
+}
 
 const userSchema = new mongoose.Schema({
 	fname: {
@@ -29,6 +35,20 @@ userSchema.set('toJSON', {
 		delete returnedObject.password
 	},
 })
+
+userSchema.pre<UserDocument>('save', function(next) {
+	if (this.password && this.isModified('password')) {
+		const salt = bcrypt.genSaltSync(10)
+		this.password = bcrypt.hashSync(this.password, salt)
+	}
+
+	next()
+})
+
+userSchema.methods.checkPassword = function(plainPassword: string) {
+	const hashPassword = this.password
+	return bcrypt.compareSync(plainPassword, hashPassword)
+}
 
 const User = mongoose.model('User', userSchema)
 

@@ -1,28 +1,6 @@
 import UserModel from './user.model'
 import {User} from './user.interface'
 
-export const createNewUser = async (
-	fname: string,
-	lname: string,
-	password: string,
-	email: string,
-	avatar: string,
-) => {
-	try {
-		const user = new UserModel({
-			fname,
-			lname,
-			password,
-			email,
-			avatar,
-		})
-		const savedUser = await user.save()
-		return savedUser.toJSON()
-	} catch (error) {
-		return error
-	}
-}
-
 export const queryUsers = async () => {
 	try {
 		const users = await UserModel.find({})

@@ -1,22 +1,5 @@
 import {RequestHandler} from 'express'
-import {
-	createNewUser,
-	queryUsers,
-	queryUser,
-	updateUser,
-	removeUser,
-} from './user.service'
-
-export const postUser: RequestHandler = async (req, res) => {
-	try {
-		const {fname, lname, password, email, avatar} = req.body
-
-		const user = await createNewUser(fname, lname, password, email, avatar)
-		res.status(201).json(user)
-	} catch (error) {
-		res.status(400).json({error: 'error at the controller ' + error})
-	}
-}
+import {queryUsers, queryUser, updateUser, removeUser} from './user.service'
 
 export const getUsers: RequestHandler = async (req, res) => {
 	try {
