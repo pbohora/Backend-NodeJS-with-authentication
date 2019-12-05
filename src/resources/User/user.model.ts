@@ -1,6 +1,7 @@
 import mongoose, {Document} from 'mongoose'
 import {User} from './user.interface'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 export interface UserDocument extends Document, User {
 	checkPassword: (password: string) => boolean
@@ -36,6 +37,14 @@ userSchema.set('toJSON', {
 	},
 })
 
+userSchema.methods.toAuthJSON = function() {
+	return {
+		fname: this.fname,
+		email: this.email,
+		id: this._id,
+		token: this.generateToken(),
+	}
+}
 userSchema.pre<UserDocument>('save', function(next) {
 	if (this.password && this.isModified('password')) {
 		const salt = bcrypt.genSaltSync(10)
@@ -48,6 +57,14 @@ userSchema.pre<UserDocument>('save', function(next) {
 userSchema.methods.checkPassword = function(plainPassword: string) {
 	const hashPassword = this.password
 	return bcrypt.compareSync(plainPassword, hashPassword)
+}
+
+userSchema.methods.generateToken = function() {
+	const userToken = {
+		email: this.email,
+		id: this._id,
+	}
+	return jwt.sign(userToken, process.env.SECRET)
 }
 
 const User = mongoose.model('User', userSchema)
